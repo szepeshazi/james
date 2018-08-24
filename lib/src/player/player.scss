@@ -1,0 +1,20 @@
+:host {
+  span.name {
+    color: white;
+    font-size: 1.6em;
+    font-weight: bold;
+  }
+
+  .card-container {
+    display: flex;
+    card {
+      width: 32px;
+      overflow: hidden;
+
+      &:last-child {
+        width: auto;
+      }
+
+    }
+  }
+}

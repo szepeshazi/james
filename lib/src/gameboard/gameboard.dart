@@ -1,11 +1,13 @@
 import 'package:angular/angular.dart';
 import 'package:james/src/models/models.dart' as m;
 import 'package:james/src/name_service.dart';
+import 'package:james/src/player/player.dart';
 
 @Component(
   selector: 'game-board',
   templateUrl: 'gameboard.html',
   styleUrls: ['gameboard.css'],
+  directives: [coreDirectives, PlayerComponent],
   exports: [m.SeatLocation]
 
 )

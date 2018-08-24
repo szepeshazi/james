@@ -1,15 +1,19 @@
 <div class="board-container">
-    <div class="north">{{ game.playersAt(m.SeatLocation.north) }}</div>
+    <div class="north">
+        <player *ngFor="let player of game.playersAt(m.SeatLocation.north)" [player]="player"></player>
+    </div>
     <div class="midland">
         <div class="west">
-            {{game.playersAt(m.SeatLocation.west)}}
+            <player *ngFor="let player of game.playersAt(m.SeatLocation.west)" [player]="player"></player>
         </div>
         <div class="center">
             Center
         </div>
         <div class="east">
-            {{game.playersAt(m.SeatLocation.east) }}
+            <player *ngFor="let player of game.playersAt(m.SeatLocation.east)" [player]="player"></player>
         </div>
     </div>
-    <div class="south">{{game.playersAt(m.SeatLocation.south)}}</div>
+    <div class="south">
+        <player *ngFor="let player of game.playersAt(m.SeatLocation.south)" [player]="player"></player>
+    </div>
 </div>

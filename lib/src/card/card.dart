@@ -1,7 +1,7 @@
 import 'package:angular/angular.dart';
 import 'package:james/src/models/card.dart';
 
-@Component(selector: 'card', template: '<img [src]="cardImageUrl">')
+@Component(selector: 'card', templateUrl: 'card.html', styleUrls: ['card.css'])
 class CardComponent {
   @Input()
   Card card;

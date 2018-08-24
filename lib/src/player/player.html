@@ -1,0 +1,4 @@
+<span class="name">{{player.name}}</span>
+<div class="card-container">
+    <card *ngFor="let card of player.hand.cards" [card]="card"></card>
+</div>
