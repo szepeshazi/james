@@ -1,0 +1,15 @@
+<div class="board-container">
+    <div class="north">{{ game.playersAt(m.SeatLocation.north) }}</div>
+    <div class="midland">
+        <div class="west">
+            {{game.playersAt(m.SeatLocation.west)}}
+        </div>
+        <div class="center">
+            Center
+        </div>
+        <div class="east">
+            {{game.playersAt(m.SeatLocation.east) }}
+        </div>
+    </div>
+    <div class="south">{{game.playersAt(m.SeatLocation.south)}}</div>
+</div>

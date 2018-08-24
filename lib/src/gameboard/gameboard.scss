@@ -1,0 +1,26 @@
+:host {
+
+  .board-container {
+    background-image: url("/img/bg.jpg");
+    background-size: contain;
+    border-radius: 5vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 90vh;
+
+    .midland {
+      flex-grow: 1;
+      display: flex;
+      width: 90vw;
+      justify-content: center;
+      align-items: center;
+
+      .center {
+        flex-grow: 1;
+        text-align: center;
+      }
+    }
+  }
+}
