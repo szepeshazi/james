@@ -34,6 +34,9 @@ class GameBoardComponent implements OnInit {
         player.hand.cards.add(game.deck.draw());
       }
     }
+    for (var player in game.players) {
+      player.hand.cards.sort();
+    }
   }
 
 }

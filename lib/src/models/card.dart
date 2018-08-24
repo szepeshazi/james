@@ -4,7 +4,7 @@ enum Rank { Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, K
 
 String enumName(dynamic value) => value.toString().split(".").last;
 
-class Card {
+class Card implements Comparable<Card> {
   final Suit suit;
   final Rank rank;
 
@@ -15,7 +15,10 @@ class Card {
   String get suitText => enumName(suit);
 
   @override
-  String toString() =>  "$rankText of $suitText";
+  String toString() => "$rankText of $suitText";
+
+  @override
+  int compareTo(Card other) => ((rank.index - other.rank.index) * Suit.values.length) + (suit.index - other.suit.index);
 }
 
 class Deck {
