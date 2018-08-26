@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:angular/angular.dart';
+import 'package:james/src/card/card.dart';
 import 'package:james/src/models/models.dart' as m;
 import 'package:james/src/name_service.dart';
 import 'package:james/src/player/player.dart';
@@ -33,19 +34,29 @@ class GameBoardComponent implements OnInit {
     game.play(tick);
   }
 
-  Future tick(m.GamePhase phase) async {
-    if (animationDelays[phase] != null) {
-      await Future.delayed(Duration(milliseconds: animationDelays[phase]));
-      for (var component in playerComponents) {
-        component.arrangeCards();
-      }
+  Future tick(m.GamePhase phase, {m.Player player, List<m.Card> cards}) async {
+    switch (phase) {
+      case m.GamePhase.deal :
+        await Future.delayed(Duration(milliseconds: animationDelays[phase]));
+        for (var component in playerComponents) {
+          component.arrangeCards();
+        }
+        break;
+      case m.GamePhase.exchange:
+        await Future.delayed(Duration(milliseconds: animationDelays[phase]));
+        PlayerComponent component = playerComponents.firstWhere((component) => component.player == player);
+        CardComponent cardComponent = component.cards.firstWhere((cardComponent) => cardComponent.card == cards.first);
+        cardComponent.selected = true;
+        break;
+      default:
+        break;
     }
   }
 
   static const Map<m.GamePhase, int> animationDelays = {
     m.GamePhase.shuffle: null,
-    m.GamePhase.deal: null,
-    m.GamePhase.exchange: 100,
+    m.GamePhase.deal: 1,
+    m.GamePhase.exchange: 200,
     m.GamePhase.select: 300
   };
 }

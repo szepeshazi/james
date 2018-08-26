@@ -13,6 +13,7 @@ class CardComponent {
 
   Element element;
 
+  @Input()
   bool selected = false;
 
   CardComponent(this.element);
