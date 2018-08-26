@@ -15,5 +15,10 @@ class Player {
 
   Hand hand = Hand();
 
+  bool active = true;
+
   Player(this.name, this.self, this.computer, this.location);
+
+  @override
+  String toString() => "$name $hand";
 }

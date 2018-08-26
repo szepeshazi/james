@@ -1,6 +1,10 @@
 :host {
-  img {
-    max-width: 120px;
-    max-height: 120px;
+  transition: transform 0.2s ease;
+
+  div {
+    img {
+      max-width: 120px;
+      max-height: 120px;
+    }
   }
 }
