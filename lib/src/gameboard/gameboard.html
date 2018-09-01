@@ -14,6 +14,6 @@
         </div>
     </div>
     <div class="south">
-        <player *ngFor="let player of game.playersAt(m.SeatLocation.south)" [player]="player"></player>
+        <player *ngFor="let player of game.playersAt(m.SeatLocation.south)" [player]="player" (selectedCards)="cardsSelected($event)"></player>
     </div>
 </div>

@@ -21,7 +21,7 @@ class Game {
 
   List<Player> playersAt(SeatLocation location) => players.where((player) => player.location == location).toList();
 
-  Future play(Tick tick) async {
+  Future play(UiCallback uiCallback) async {
 //    while (players.any((player) => player.active)) {
 
     // Start with empty hands
@@ -34,25 +34,23 @@ class Game {
     for (int i = 0; i < cardsToDeal; i++) {
       for (var player in activePlayers) {
         player.hand.cards.add(deck.draw());
-        //await tick(GamePhase.deal);
       }
     }
     for (var player in activePlayers) {
       player.hand.cards.sort();
     }
-    await tick(GamePhase.deal);
+    await uiCallback(GamePhase.deal);
 
     // Exchange cards
     for (int i = 0; i < players.length; i++) {
       int playerOffset = (i + dealerIndex) % players.length;
       Player player = players.elementAt(playerOffset);
-      if (!player.self) {
-        int numOfExchanges = random.nextInt(4);
-        List<int> cardIndexes = List.generate(cardsToDeal, (i) => i);
-        cardIndexes.shuffle();
-        for (var j = 0; j < numOfExchanges; j++) {
-          tick(GamePhase.exchange, player:player, cards: [player.hand.cards.elementAt(cardIndexes[j])]);
-        }
+      if (player.computer) {
+        List<Card> selectedCards = player.exchange();
+        await uiCallback(GamePhase.exchange, player: player, cards: selectedCards);
+      } else {
+        List<Card> selectedCards = await uiCallback(GamePhase.exchange, player: player);
+        print("Exchanged cards: $selectedCards");
       }
     }
   }
@@ -60,4 +58,4 @@ class Game {
 
 }
 
-typedef Tick = Future Function(GamePhase phase, {Player player, List<Card> cards});
+typedef UiCallback = Future<List<Card>> Function(GamePhase phase, {Player player, List<Card> cards});

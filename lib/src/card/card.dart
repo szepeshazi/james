@@ -3,8 +3,15 @@ import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:james/src/models/models.dart' as m;
 
-@Component(selector: 'card', templateUrl: 'card.html', styleUrls: ['card.css'])
+@Component(
+    selector: 'card',
+    templateUrl: 'card.html',
+    styleUrls: ['card.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush)
 class CardComponent {
+
+  final ChangeDetectorRef changeDetectorRef;
+
   @Input()
   m.Card card;
 
@@ -13,17 +20,30 @@ class CardComponent {
 
   Element element;
 
-  @Input()
-  bool selected = false;
+  bool _selected = false;
 
-  CardComponent(this.element);
+  bool get selected => _selected;
+
+  @Input()
+  set selected(bool newValue) {
+    _selected = newValue;
+    print("$card selected: $selected");
+    updateUi();
+  }
+
+  CardComponent(this.element, this.changeDetectorRef);
 
   void toggle() {
     selected = !selected;
-    int offset = location == m.SeatLocation.south ? -20 : 20;
+  }
+
+  void updateUi() {
+    int offset = location == m.SeatLocation.south ? -selectedOffset : selectedOffset;
     element.style.transform.replaceAll(RegExp(r'translateY\(.+\)'), "");
     element.style.transform = "${element.style.transform} translateY(${selected ? offset : -offset}px)";
   }
 
   String get cardImageUrl => "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
+
+  static const int selectedOffset = 20;
 }
