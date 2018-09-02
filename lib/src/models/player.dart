@@ -41,7 +41,7 @@ class Player {
     cardIndexes.shuffle();
     List<Card> exchanges = [];
     for (var i = 0; i < numOfExchanges; i++) {
-      exchanges.add(hand.cards.elementAt(i));
+      exchanges.add(hand.cards[cardIndexes[i]]);
     }
     return exchanges;
   }

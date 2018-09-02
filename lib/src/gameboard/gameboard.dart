@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:angular/angular.dart';
-import 'package:james/src/card/card.dart';
 import 'package:james/src/models/models.dart' as m;
 import 'package:james/src/name_service.dart';
 import 'package:james/src/player/player.dart';
@@ -13,7 +13,7 @@ import 'package:james/src/player/player.dart';
     directives: [coreDirectives, PlayerComponent],
     exports: [m.SeatLocation],
     changeDetection: ChangeDetectionStrategy.OnPush)
-class GameBoardComponent implements OnInit {
+class GameBoardComponent implements OnInit, AfterViewInit {
   m.Game game = m.Game();
 
   final NameService nameService;
@@ -36,33 +36,45 @@ class GameBoardComponent implements OnInit {
     players.add(m.Player.human(nameService.any, true, m.SeatLocation.south));
 
     game.players = players;
+  }
+
+  @override
+  void ngAfterViewInit() {
     game.play(uiCallback);
   }
 
-  Future<List<m.Card>> uiCallback(m.GamePhase phase, {m.Player player, List<m.Card> cards}) async {
+  Future<List<m.Card>> uiCallback(m.GamePhase phase,
+      {m.Player player, List<m.Card> cards, Map<String, dynamic> additionalParams}) async {
+    PlayerComponent currentPlayerComponent =
+        player == null ? null : playerComponents.firstWhere((component) => component.player == player);
     switch (phase) {
+      case m.GamePhase.beforeDeal:
+        currentPlayerComponent.numOfCards = additionalParams["cardsToDeal"];
+        break;
       case m.GamePhase.deal:
-        await Future.delayed(Duration(milliseconds: animationDelays[phase]));
-        for (var component in playerComponents) {
-          component.arrangeCards();
-        }
+        await updatePlayerHand(currentPlayerComponent);
+        await Future.delayed(animationDelays[Delay.short]);
+        break;
+      case m.GamePhase.afterDeal:
+        await updatePlayerHand(currentPlayerComponent);
+        await Future.delayed(animationDelays[Delay.short]);
         break;
       case m.GamePhase.exchange:
         if (player.self) {
           exchangeCompleter = Completer<List<m.Card>>();
-          print("exchangeCompleter init");
           return exchangeCompleter.future;
         } else {
-          await Future.delayed(Duration(milliseconds: animationDelays[phase]));
-          PlayerComponent component = playerComponents.firstWhere((component) => component.player == player);
-          component.cards
+          currentPlayerComponent.cards
               .where((cardComponent) => cards.any((card) => cardComponent.card == card))
               .forEach((cardComponent) => cardComponent.selected = true);
-          CardComponent cardComponent =
-              component.cards.firstWhere((cardComponent) => cardComponent.card == cards.first);
-          cardComponent.selected = true;
-          return Future.value([cardComponent.card]);
+          await updatePlayerHand(currentPlayerComponent);
+          await Future.delayed(animationDelays[Delay.long]);
+          return Future.value(cards);
         }
+        break;
+      case m.GamePhase.replaced:
+        await updatePlayerHand(currentPlayerComponent);
+        await Future.delayed(animationDelays[Delay.long]);
         break;
       default:
         break;
@@ -70,15 +82,26 @@ class GameBoardComponent implements OnInit {
     return null;
   }
 
+  Future updatePlayerHand(PlayerComponent playerComponent) async {
+    playerComponent.changeDetectorRef.markForCheck();
+    await window.animationFrame;
+    playerComponent.arrangeCards();
+  }
+
   void cardsSelected(List<m.Card> cards) {
-    print("exchangeCompleter complete: $exchangeCompleter");
     exchangeCompleter.complete(cards);
   }
 
-  static const Map<m.GamePhase, int> animationDelays = {
-    m.GamePhase.shuffle: null,
-    m.GamePhase.deal: 1,
-    m.GamePhase.exchange: 200,
-    m.GamePhase.select: 300
+  static const Map<Delay, Duration> animationDelays = {
+    Delay.short: Duration(milliseconds: 200),
+    Delay.medium: Duration(milliseconds: 400),
+    Delay.long : Duration(seconds: 1)
   };
+
+}
+
+enum Delay {
+  short,
+  medium,
+  long
 }

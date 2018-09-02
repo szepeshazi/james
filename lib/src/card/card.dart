@@ -27,7 +27,6 @@ class CardComponent {
   @Input()
   set selected(bool newValue) {
     _selected = newValue;
-    print("$card selected: $selected");
     updateUi();
   }
 

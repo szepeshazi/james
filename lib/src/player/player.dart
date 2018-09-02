@@ -21,6 +21,9 @@ class PlayerComponent {
   @Input()
   m.Player player;
 
+  @Input()
+  int numOfCards;
+
   PlayerComponent(this.changeDetectorRef);
 
   @Output()
@@ -30,12 +33,12 @@ class PlayerComponent {
   List<CardComponent> cards;
 
   void arrangeCards() {
-    int cardOffset = 55;
-    int handOffset = (cards.length * cardOffset) ~/ 2 + cardOffset ~/ 2;
+    int cardOffset = 25;
     for (int i = 0; i < cards.length; i++) {
-      cards.elementAt(i).element.style.transform = "translateX(${handOffset - cardOffset * (i + 1)}px)";
-      cards.elementAt(i).element.style.zIndex = "${i * 10}px";
+      cards[i].element.style.left = "${cardOffset * i}px";
+      cards[i].element.style.zIndex = "${i * 10}px";
     }
+    changeDetectorRef.markForCheck();
   }
 
   void go() {
