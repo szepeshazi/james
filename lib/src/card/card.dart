@@ -16,7 +16,7 @@ class CardComponent {
   m.Card card;
 
   @Input()
-  m.SeatLocation location;
+  m.Player player;
 
   Element element;
 
@@ -33,11 +33,13 @@ class CardComponent {
   CardComponent(this.element, this.changeDetectorRef);
 
   void toggle() {
-    selected = !selected;
+    if (!player.computer) {
+      selected = !selected;
+    }
   }
 
   void updateUi() {
-    int offset = location == m.SeatLocation.south ? -selectedOffset : selectedOffset;
+    int offset = player.location == m.SeatLocation.south ? -selectedOffset : selectedOffset;
     element.style.transform.replaceAll(RegExp(r'translateY\(.+\)'), "");
     element.style.transform = "${element.style.transform} translateY(${selected ? offset : -offset}px)";
   }

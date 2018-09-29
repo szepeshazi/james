@@ -27,14 +27,9 @@ class Player {
     if (!computer) {
       throw StateError("Human players need to select cards to exchange manually");
     }
-    Map<Rank, int> cardRankOccurrences = {};
-    for (var card in hand.cards) {
-      cardRankOccurrences[card.rank] ??= 0;
-      cardRankOccurrences[card.rank]++;
-    }
     int index = 0;
     Map<int, int> cardScores = new Map.fromIterable(hand.cards,
-        key: (_) => index++, value: (card) => cardWeights[card.rank] * cardRankOccurrences[card.rank]);
+        key: (_) => index++, value: (card) => cardExchangeWeights[card.rank] * cardRankOccurrences[card.rank]);
 
     int numOfExchanges = random.nextInt(3) + 1;
     List<int> cardIndexes = List.generate(hand.cards.length, (i) => i);
@@ -46,10 +41,25 @@ class Player {
     return exchanges;
   }
 
+  Map<Rank, int> get cardRankOccurrences {
+    Map<Rank, int> occurrences = {};
+    for (var card in hand.cards) {
+      occurrences[card.rank] ??= 0;
+      occurrences[card.rank]++;
+    }
+    return occurrences;
+  }
+
+  List<Card> play({bool isFirst}) {
+    List<Card> played = [];
+    played.add(hand.cards.last);
+    return played;
+  }
+
   @override
   String toString() => "$name $hand";
 
-  static const Map<Rank, int> cardWeights = {
+  static const Map<Rank, int> cardExchangeWeights = {
     Rank.Two: 100,
     Rank.Three: 80,
     Rank.Four: 60,
@@ -64,4 +74,21 @@ class Player {
     Rank.King: 80,
     Rank.Ace: 100
   };
+
+  static const Map<Rank, int> cardRoundStartWeights = {
+    Rank.Two: 0,
+    Rank.Three: 10,
+    Rank.Four: 20,
+    Rank.Five: 30,
+    Rank.Six: 40,
+    Rank.Seven: 50,
+    Rank.Eight: 60,
+    Rank.Nine: 70,
+    Rank.Ten: 80,
+    Rank.Jack: 100,
+    Rank.Queen: 120,
+    Rank.King: 140,
+    Rank.Ace: 160
+  };
+
 }

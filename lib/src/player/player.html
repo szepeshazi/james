@@ -5,7 +5,7 @@
     </div>
 </template>
 <div class="card-container">
-    <card *ngFor="let card of player.hand.cards" [card]="card" [location]="player.location" #hand></card>
+    <card *ngFor="let card of player.hand.cards" [card]="card" [player]="player" #hand></card>
 </div>
 <template [ngIf]="player.location == m.SeatLocation.south">
     <div class="player-info">

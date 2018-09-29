@@ -5,7 +5,24 @@ import 'package:james/src/models/card.dart';
 import 'package:james/src/models/hand.dart';
 import 'package:james/src/models/player.dart';
 
-enum GamePhase { shuffle, beforeDeal, deal, afterDeal, exchange, replaced, select }
+enum GamePhase {
+  // Shuffling the deck
+  shuffle,
+  // Before dealing cards
+  beforeDeal,
+  // After each card dealt
+  deal,
+  // After all cards dealt
+  afterDeal,
+  // Player exchanges cards
+  exchange,
+  // Player receives cards for exchanged cards
+  replaced,
+  // Replace phase for given player is done, hand is sorted again
+  afterExchange,
+  round,
+  afterRound
+}
 
 class Game {
   List<Player> players;
@@ -32,7 +49,7 @@ class Game {
     // Deal cards to players still in play
     List<Player> activePlayers = players.where((player) => player.active).toList();
     for (var player in activePlayers) {
-      await uiCallback(GamePhase.beforeDeal, player: player, additionalParams: {"cardsToDeal" : cardsToDeal});
+      await uiCallback(GamePhase.beforeDeal, player: player, additionalParams: {"cardsToDeal": cardsToDeal});
     }
 
     for (int i = 0; i < cardsToDeal; i++) {
@@ -51,6 +68,7 @@ class Game {
     for (int i = 0; i < players.length; i++) {
       int playerOffset = (i + dealerIndex) % players.length;
       Player player = players.elementAt(playerOffset);
+      if (!player.active) continue;
       List<Card> selectedCards;
       if (player.computer) {
         selectedCards = player.exchange();
@@ -66,10 +84,28 @@ class Game {
       }
       player.hand.cards.addAll(replacementCards);
       await uiCallback(GamePhase.replaced, player: player, cards: replacementCards);
+      player.hand.cards.sort();
+      await uiCallback(GamePhase.afterExchange, player: player);
+    }
+
+    // Play round
+    while (activePlayers.any((p) => p.hand.cards.isNotEmpty)) {
+      for (int i = 0; i < players.length; i++) {
+        int playerOffset = (i + dealerIndex) % players.length;
+        Player player = players.elementAt(playerOffset);
+        if (!player.active) continue;
+        List<Card> playedCards;
+        if (player.computer) {
+          playedCards = player.play(isFirst: i == 0);
+          await uiCallback(GamePhase.round, player: player, cards: playedCards);
+        } else {
+          playedCards = await uiCallback(GamePhase.round, player: player);
+        }
+        player.hand.cards.removeWhere((card) => playedCards.contains(card));
+        await uiCallback(GamePhase.afterRound, player: player, cards: playedCards);
+      }
     }
   }
-//  }
-
 }
 
 typedef UiCallback = Future<List<Card>> Function(GamePhase phase,

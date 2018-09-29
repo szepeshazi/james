@@ -25,7 +25,7 @@ class GameBoardComponent implements OnInit, AfterViewInit {
   @ViewChildren(PlayerComponent)
   List<PlayerComponent> playerComponents;
 
-  Completer<List<m.Card>> exchangeCompleter;
+  Completer<List<m.Card>> selectionCompleter;
 
   @override
   void ngOnInit() {
@@ -57,12 +57,12 @@ class GameBoardComponent implements OnInit, AfterViewInit {
         break;
       case m.GamePhase.afterDeal:
         await updatePlayerHand(currentPlayerComponent);
-        await Future.delayed(animationDelays[Delay.short]);
+        await Future.delayed(animationDelays[Delay.medium]);
         break;
       case m.GamePhase.exchange:
         if (player.self) {
-          exchangeCompleter = Completer<List<m.Card>>();
-          return exchangeCompleter.future;
+          selectionCompleter = Completer<List<m.Card>>();
+          return selectionCompleter.future;
         } else {
           currentPlayerComponent.cards
               .where((cardComponent) => cards.any((card) => cardComponent.card == card))
@@ -74,7 +74,28 @@ class GameBoardComponent implements OnInit, AfterViewInit {
         break;
       case m.GamePhase.replaced:
         await updatePlayerHand(currentPlayerComponent);
-        await Future.delayed(animationDelays[Delay.long]);
+        await Future.delayed(animationDelays[Delay.medium]);
+        break;
+      case m.GamePhase.afterExchange:
+        await updatePlayerHand(currentPlayerComponent);
+        await Future.delayed(animationDelays[Delay.medium]);
+        break;
+      case m.GamePhase.round:
+        if (player.self) {
+          selectionCompleter = Completer<List<m.Card>>();
+          return selectionCompleter.future;
+        } else {
+          currentPlayerComponent.cards
+              .where((cardComponent) => cards.any((card) => cardComponent.card == card))
+              .forEach((cardComponent) => cardComponent.selected = true);
+          await updatePlayerHand(currentPlayerComponent);
+          await Future.delayed(animationDelays[Delay.long]);
+          return Future.value(cards);
+        }
+        break;
+      case m.GamePhase.afterRound:
+        await updatePlayerHand(currentPlayerComponent);
+        await Future.delayed(animationDelays[Delay.medium]);
         break;
       default:
         break;
@@ -89,12 +110,12 @@ class GameBoardComponent implements OnInit, AfterViewInit {
   }
 
   void cardsSelected(List<m.Card> cards) {
-    exchangeCompleter.complete(cards);
+    selectionCompleter.complete(cards);
   }
 
   static const Map<Delay, Duration> animationDelays = {
-    Delay.short: Duration(milliseconds: 200),
-    Delay.medium: Duration(milliseconds: 400),
+    Delay.short: Duration(milliseconds: 50),
+    Delay.medium: Duration(milliseconds: 300),
     Delay.long : Duration(seconds: 1)
   };
 
