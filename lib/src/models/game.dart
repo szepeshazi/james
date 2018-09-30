@@ -24,6 +24,19 @@ enum GamePhase {
   afterRound
 }
 
+class Sink {
+  List<Card> cards;
+}
+
+class PlayedHand {
+  Player player;
+  List<Card> cards;
+}
+
+class Pit {
+  List<PlayedHand> stack;
+}
+
 class Game {
   List<Player> players;
   Deck deck;

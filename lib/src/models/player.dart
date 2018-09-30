@@ -27,9 +27,8 @@ class Player {
     if (!computer) {
       throw StateError("Human players need to select cards to exchange manually");
     }
-    int index = 0;
-    Map<int, int> cardScores = new Map.fromIterable(hand.cards,
-        key: (_) => index++, value: (card) => cardExchangeWeights[card.rank] * cardRankOccurrences[card.rank]);
+    Map<Rank, int> cardScores = new Map.fromIterable(hand.cards,
+        key: (card) => card.rank, value: (card) => cardExchangeWeights[card.rank] * cardRankOccurrences[card.rank]);
 
     int numOfExchanges = random.nextInt(3) + 1;
     List<int> cardIndexes = List.generate(hand.cards.length, (i) => i);
@@ -52,7 +51,17 @@ class Player {
 
   List<Card> play({bool isFirst}) {
     List<Card> played = [];
-    played.add(hand.cards.last);
+    if (isFirst) {
+      Map<Rank, int> cardScores = {};
+      for (Card card in hand.cards) {
+        cardScores[card.rank] ??= 0;
+        cardScores[card.rank] += cardRoundStartWeights[card.rank];
+      }
+      Rank maxValueRank = cardScores.keys.reduce((rank, nextRank) => cardScores[rank] > cardScores[nextRank] ? rank : nextRank);
+      played = hand.cards.where((card) => card.rank == maxValueRank).toList();
+    } else {
+      played.add(hand.cards.last);
+    }
     return played;
   }
 
