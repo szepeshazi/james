@@ -1,19 +1,19 @@
 <div class="board-container">
-    <div class="north">
+    <div class="north area">
         <player *ngFor="let player of game.playersAt(m.SeatLocation.north)" [player]="player"></player>
     </div>
     <div class="midland">
-        <div class="west">
+        <div class="west area">
             <player *ngFor="let player of game.playersAt(m.SeatLocation.west)" [player]="player"></player>
         </div>
-        <div class="center">
-            Center
+        <div class="center area">
+            <deck></deck>
         </div>
-        <div class="east">
+        <div class="east area">
             <player *ngFor="let player of game.playersAt(m.SeatLocation.east)" [player]="player"></player>
         </div>
     </div>
-    <div class="south">
+    <div class="south area">
         <player *ngFor="let player of game.playersAt(m.SeatLocation.south)" [player]="player" (selectedCards)="cardsSelected($event)"></player>
     </div>
 </div>

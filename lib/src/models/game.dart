@@ -40,6 +40,8 @@ class Pit {
 class Game {
   List<Player> players;
   Deck deck;
+  List<Card> pit;
+  List<Card> sink;
   Random random;
 
   int dealerIndex = 0;
@@ -62,7 +64,7 @@ class Game {
     // Deal cards to players still in play
     List<Player> activePlayers = players.where((player) => player.active).toList();
     for (var player in activePlayers) {
-      await uiCallback(GamePhase.beforeDeal, player: player, additionalParams: {"cardsToDeal": cardsToDeal});
+      await uiCallback(GamePhase.beforeDeal, player: player, params: {CallbackParam.cardsToDeal: cardsToDeal});
     }
 
     for (int i = 0; i < cardsToDeal; i++) {
@@ -122,4 +124,9 @@ class Game {
 }
 
 typedef UiCallback = Future<List<Card>> Function(GamePhase phase,
-    {Player player, List<Card> cards, Map<String, dynamic> additionalParams});
+    {Player player, List<Card> cards, Map<CallbackParam, dynamic> params});
+
+
+enum CallbackParam {
+  cardsToDeal
+}

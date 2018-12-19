@@ -44,12 +44,12 @@ class GameBoardComponent implements OnInit, AfterViewInit {
   }
 
   Future<List<m.Card>> uiCallback(m.GamePhase phase,
-      {m.Player player, List<m.Card> cards, Map<String, dynamic> additionalParams}) async {
+      {m.Player player, List<m.Card> cards, Map<m.CallbackParam, dynamic> params}) async {
     PlayerComponent currentPlayerComponent =
         player == null ? null : playerComponents.firstWhere((component) => component.player == player);
     switch (phase) {
       case m.GamePhase.beforeDeal:
-        currentPlayerComponent.numOfCards = additionalParams["cardsToDeal"];
+        currentPlayerComponent.numOfCards = params[m.CallbackParam.cardsToDeal];
         break;
       case m.GamePhase.deal:
         await updatePlayerHand(currentPlayerComponent);

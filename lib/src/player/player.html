@@ -1,15 +1,20 @@
-<template [ngIf]="player.location != m.SeatLocation.south">
-    <div class="player-info">
-        <span  class="name">{{player.name}}</span>
-        <material-button *ngIf="player.self" raised (trigger)="go()" class="white">Go</material-button>
+<div
+        class="wrapper"
+        [class.east]="player.location == m.SeatLocation.east"
+        [class.west]="player.location == m.SeatLocation.west">
+    <template [ngIf]="player.location != m.SeatLocation.south">
+        <div class="player-info">
+            <span class="name">{{player.name}}</span>
+            <material-button *ngIf="player.self" raised (trigger)="go()" class="white">Go</material-button>
+        </div>
+    </template>
+    <div class="card-container">
+        <card *ngFor="let card of player.hand.cards" [card]="card" [player]="player" #hand></card>
     </div>
-</template>
-<div class="card-container">
-    <card *ngFor="let card of player.hand.cards" [card]="card" [player]="player" #hand></card>
+    <template [ngIf]="player.location == m.SeatLocation.south">
+        <div class="player-info">
+            <span class="name">{{player.name}}</span>
+            <material-button *ngIf="player.self" raised (trigger)="go()" class="white">Go</material-button>
+        </div>
+    </template>
 </div>
-<template [ngIf]="player.location == m.SeatLocation.south">
-    <div class="player-info">
-        <span  class="name">{{player.name}}</span>
-        <material-button *ngIf="player.self" raised (trigger)="go()" class="white">Go</material-button>
-    </div>
-</template>

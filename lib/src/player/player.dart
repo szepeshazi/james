@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:html';
+import 'dart:math' as math show min, max;
 
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
+import 'package:angular_components/utils/disposer/disposer.dart';
 import 'package:james/src/card/card.dart';
 import 'package:james/src/models/models.dart' as m;
 
@@ -12,8 +15,14 @@ import 'package:james/src/models/models.dart' as m;
     directives: [CardComponent, coreDirectives, MaterialButtonComponent],
     exports: [m.SeatLocation],
     changeDetection: ChangeDetectionStrategy.OnPush)
-class PlayerComponent {
+class PlayerComponent implements OnInit, OnDestroy{
+  int cardXOffset;
+  int cardYOffset;
+  int cardWidth;
+  int cardSpacing;
+
   final ChangeDetectorRef changeDetectorRef;
+  final Disposer disposer = Disposer.oneShot();
 
   StreamController<List<m.Card>> selectedCardsController = StreamController<List<m.Card>>();
 
@@ -32,28 +41,17 @@ class PlayerComponent {
   List<CardComponent> cards;
 
   void arrangeCards() {
+    int width = window.innerWidth ?? document.documentElement.clientWidth;
+    int height = window.innerHeight ?? document.documentElement.clientHeight;
+    Dimension windowSize = Dimension(width, height);
+    HandPlacement placement = HandPlacement.calc(player, windowSize);
+
     for (int i = 0; i < cards.length; i++) {
-      cards[i].element.style.left = "${initialOffset + (cardOffset * i)}px";
+      cards[i].element.style.left = "${placement.xOffset + (i * placement.cardSpacing)}px";
+      cards[i].element.style.top = "${placement.yOffset}px";
       cards[i].element.style.zIndex = "${i * 10}px";
     }
     changeDetectorRef.markForCheck();
-  }
-
-  int get initialOffset {
-    int offset;
-    switch (player.location) {
-      case m.SeatLocation.west:
-        offset = - (cardWidth ~/ 2);
-        break;
-      case m.SeatLocation.east:
-        offset = -numOfCards * cardOffset;
-        break;
-      case m.SeatLocation.north:
-      case m.SeatLocation.south:
-        offset = -(numOfCards ~/ 2) * cardOffset - (cardWidth ~/ 2);
-        break;
-    }
-    return offset;
   }
 
   void go() {
@@ -61,6 +59,64 @@ class PlayerComponent {
         cards.where((cardComponent) => cardComponent.selected).map((cardComponent) => cardComponent.card).toList());
   }
 
-  static const int cardOffset = 25;
-  static const int cardWidth = 120;
+  @override
+  void ngOnInit() {
+    StreamSubscription<Event> resize = window.onResize.listen((_) => arrangeCards());
+    disposer.addStreamSubscription(resize);
+  }
+
+  @override
+  void ngOnDestroy() {
+    disposer.dispose();
+  }
+
+}
+
+class HandPlacement {
+  int xOffset = 0;
+  int yOffset = 0;
+  int cardWidth;
+  int cardSpacing;
+
+  final m.Player player;
+
+  HandPlacement.calc(this.player, Dimension windowSize) {
+    recalculate(windowSize);
+  }
+
+  recalculate(Dimension windowSize) {
+    cardWidth = (windowSize.width * CardComponent.viewportWidthRatio / 100).round();
+    cardWidth = math.max(math.min(cardWidth, CardComponent.maxWidth), CardComponent.minWidth);
+
+    cardSpacing = (cardWidth * CardComponent.spacingRatio).round();
+    switch (player.location) {
+      case m.SeatLocation.east:
+        // Anchor to left center
+        xOffset = -cardWidth - (player.hand.cards.length * cardSpacing).round();
+        yOffset = 0;
+        break;
+      case m.SeatLocation.north:
+        // Anchor to center top
+        xOffset = -(cardWidth / 2).round() - (player.hand.cards.length * cardSpacing / 2).round();
+        yOffset = 0;
+        break;
+      case m.SeatLocation.west:
+        // Anchor to right center
+        xOffset = 0;
+        yOffset = 0;
+        break;
+      case m.SeatLocation.south:
+        // Anchor to center bottom
+        xOffset = -(cardWidth / 2).round() - (player.hand.cards.length * cardSpacing / 2).round();
+        yOffset = -(cardWidth * CardComponent.heightRatio).round();
+        break;
+    }
+  }
+}
+
+class Dimension {
+  final int width;
+  final int height;
+
+  Dimension(this.width, this.height);
 }

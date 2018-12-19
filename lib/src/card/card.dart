@@ -47,4 +47,10 @@ class CardComponent {
   String get cardImageUrl => "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
 
   static const int selectedOffset = 20;
+  static const int viewportWidthRatio = 10;
+  static const int minWidth = 42;
+  static const int maxWidth = 80;
+  static const double heightRatio = 1.5;
+  static const double spacingRatio = 0.25;
+
 }

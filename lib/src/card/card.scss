@@ -3,8 +3,9 @@
 
   div {
     img {
-      max-width: 120px;
-      max-height: 120px;
+      max-width: 80px;
+      min-width: 42px;
+      width: 10vw;
     }
   }
 }

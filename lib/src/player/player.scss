@@ -13,29 +13,37 @@
 :host {
   @include colorize("material-button.white", $mat-white);
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  div.player-info {
+  div.wrapper {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
-    span.name {
-      color: white;
-      font-size: 1.6em;
-      font-weight: bold;
-      margin-right: 16px;
+    &.west {
+      align-items: flex-start;
     }
 
-  }
+    &.east {
+      align-items: flex-end;
+    }
 
-  .card-container {
-    display: flex;
-    position: relative;
+    div.player-info {
+      display: flex;
 
-    card {
-      position: absolute;
+      span.name {
+        color: white;
+        font-size: 1.6em;
+        font-weight: bold;
+      }
+    }
+
+    .card-container {
+      display: flex;
+      position: relative;
+
+      card {
+        position: absolute;
+      }
     }
   }
 }
