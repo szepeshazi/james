@@ -35,7 +35,7 @@ class GameBoardComponent implements OnInit, AfterViewInit {
     players.add(m.Player.ai(nameService.any, false, m.SeatLocation.east));
     players.add(m.Player.human(nameService.any, true, m.SeatLocation.south));
 
-    game.players = players;
+    game.state.players = players;
   }
 
   @override

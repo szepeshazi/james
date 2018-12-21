@@ -8,7 +8,7 @@
             <material-button *ngIf="player.self" raised (trigger)="go()" class="white">Go</material-button>
         </div>
     </template>
-    <div class="card-container">
+    <div class="card-container" #cardContainer>
         <card *ngFor="let card of player.hand.cards" [card]="card" [player]="player" #hand></card>
     </div>
     <template [ngIf]="player.location == m.SeatLocation.south">

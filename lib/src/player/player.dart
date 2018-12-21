@@ -40,6 +40,9 @@ class PlayerComponent implements OnInit, OnDestroy{
   @ViewChildren('hand')
   List<CardComponent> cards;
 
+  @ViewChild("cardContainer")
+  Element cardContainer;
+
   void arrangeCards() {
     int width = window.innerWidth ?? document.documentElement.clientWidth;
     int height = window.innerHeight ?? document.documentElement.clientHeight;
@@ -51,6 +54,8 @@ class PlayerComponent implements OnInit, OnDestroy{
       cards[i].element.style.top = "${placement.yOffset}px";
       cards[i].element.style.zIndex = "${i * 10}px";
     }
+
+    cardContainer.style.height = "${(placement.cardWidth * CardComponent.heightRatio).round()}px";
     changeDetectorRef.markForCheck();
   }
 
@@ -108,7 +113,8 @@ class HandPlacement {
       case m.SeatLocation.south:
         // Anchor to center bottom
         xOffset = -(cardWidth / 2).round() - (player.hand.cards.length * cardSpacing / 2).round();
-        yOffset = -(cardWidth * CardComponent.heightRatio).round();
+        //yOffset = -(cardWidth * CardComponent.heightRatio).round();
+        yOffset = 0;
         break;
     }
   }

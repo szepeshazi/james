@@ -1,4 +1,5 @@
 export 'card.dart';
-export 'game.dart';
 export 'hand.dart';
 export 'player.dart';
+export 'game.dart';
+export 'game_state.dart';
