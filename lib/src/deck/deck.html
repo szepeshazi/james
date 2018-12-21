@@ -1,0 +1,5 @@
+<div class="wrapper">
+    <div class="card-container" #cardContainer>
+        <card *ngFor="let card of deckRepresentation" [card]="card" [hide]="true" #deck></card>
+    </div>
+</div>

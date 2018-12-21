@@ -97,7 +97,7 @@ class HandPlacement {
     switch (player.location) {
       case m.SeatLocation.east:
         // Anchor to left center
-        xOffset = -cardWidth - (player.hand.cards.length * cardSpacing).round();
+        xOffset = -cardWidth - ((player.hand.cards.length - 1) * cardSpacing).round();
         yOffset = 0;
         break;
       case m.SeatLocation.north:

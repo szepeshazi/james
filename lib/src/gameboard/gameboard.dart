@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
+import 'package:james/src/deck/deck.dart';
 import 'package:james/src/models/models.dart' as m;
 import 'package:james/src/name_service.dart';
 import 'package:james/src/player/player.dart';
@@ -10,7 +11,7 @@ import 'package:james/src/player/player.dart';
     selector: 'game-board',
     templateUrl: 'gameboard.html',
     styleUrls: ['gameboard.css'],
-    directives: [coreDirectives, PlayerComponent],
+    directives: [coreDirectives, PlayerComponent, DeckComponent],
     exports: [m.SeatLocation],
     changeDetection: ChangeDetectionStrategy.OnPush)
 class GameBoardComponent implements OnInit, AfterViewInit {

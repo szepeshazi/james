@@ -16,6 +16,9 @@ class CardComponent {
   m.Card card;
 
   @Input()
+  bool hide = false;
+
+  @Input()
   m.Player player;
 
   Element element;
@@ -33,18 +36,18 @@ class CardComponent {
   CardComponent(this.element, this.changeDetectorRef);
 
   void toggle() {
-    if (!player.computer) {
+    if (!(player?.computer ?? true)) {
       selected = !selected;
     }
   }
 
   void updateUi() {
-    int offset = player.location == m.SeatLocation.south ? -selectedOffset : selectedOffset;
+    int offset = player?.location == m.SeatLocation.south ? -selectedOffset : selectedOffset;
     element.style.transform.replaceAll(RegExp(r'translateY\(.+\)'), "");
     element.style.transform = "${element.style.transform} translateY(${selected ? offset : -offset}px)";
   }
 
-  String get cardImageUrl => "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
+  String get cardImageUrl => hide ? "/img/back_red.svg" : "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
 
   static const int selectedOffset = 20;
   static const int viewportWidthRatio = 10;
