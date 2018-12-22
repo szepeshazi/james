@@ -25,19 +25,6 @@ enum GamePhase {
   afterRound
 }
 
-class Sink {
-  List<Card> cards;
-}
-
-class PlayedHand {
-  Player player;
-  List<Card> cards;
-}
-
-class Pit {
-  List<PlayedHand> stack;
-}
-
 class Game {
   GameState state;
   Random random;
@@ -46,10 +33,14 @@ class Game {
   int cardsToDeal = 8;
 
   Game()
-      : state = GameState()..deck = Deck.shuffled(numOfPacks: 2),
+      : state = GameState()
+          ..deck = Deck.shuffled(numOfPacks: 2)
+          ..pit = []
+          ..sink = [],
         random = Random();
 
-  List<Player> playersAt(SeatLocation location) => state.players.where((player) => player.location == location).toList();
+  List<Player> playersAt(SeatLocation location) =>
+      state.players.where((player) => player.location == location).toList();
 
   Future play(UiCallback uiCallback) async {
 //    while (players.any((player) => player.active)) {
@@ -115,6 +106,7 @@ class Game {
           playedCards = await uiCallback(GamePhase.round, player: player);
         }
         player.hand.cards.removeWhere((card) => playedCards.contains(card));
+        state.pit.addAll(playedCards);
         await uiCallback(GamePhase.afterRound, player: player, cards: playedCards);
       }
     }
@@ -124,7 +116,4 @@ class Game {
 typedef UiCallback = Future<List<Card>> Function(GamePhase phase,
     {Player player, List<Card> cards, Map<CallbackParam, dynamic> params});
 
-
-enum CallbackParam {
-  cardsToDeal
-}
+enum CallbackParam { cardsToDeal }

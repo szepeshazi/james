@@ -58,5 +58,7 @@ class Deck {
     return card;
   }
 
+  Deck clone() => Deck._(List.from(cards));
+
   bool get hasMore => cards.isNotEmpty;
 }

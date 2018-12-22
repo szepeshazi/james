@@ -95,6 +95,7 @@ class GameBoardComponent implements OnInit, AfterViewInit {
         }
         break;
       case m.GamePhase.afterRound:
+        game.state = game.state.clone();
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.medium]);
         break;

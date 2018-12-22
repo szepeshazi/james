@@ -5,7 +5,6 @@ import 'dart:math' as math show min, max;
 import 'package:angular/angular.dart';
 import 'package:angular_components/utils/disposer/disposer.dart';
 import 'package:james/src/card/card.dart';
-import 'package:james/src/player/player.dart';
 import 'package:james/src/models/models.dart';
 
 @Component(
@@ -23,18 +22,25 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   GameState gameState;
 
-  @ViewChildren('deck')
+  @ViewChildren("deck")
   List<CardComponent> deckCards;
 
-  @ViewChild("cardContainer")
-  Element cardContainer;
+  @ViewChildren("pit")
+  List<CardComponent> pitCards;
+
+  @ViewChild("deckContainer")
+  Element deckContainer;
+
+  @ViewChild("pitContainer")
+  Element pitContainer;
 
   DeckComponent(this.changeDetectorRef);
 
-  List<Card> get deckRepresentation => gameState.deck.cards.skip((gameState.deck.cards.length * 9 ~/ 10) - 1).toList();
+  List<Card> deckRepresentation;
 
   @override
   void ngOnInit() {
+    deckRepresentation = gameState.deck.cards.skip((gameState.deck.cards.length * 9 ~/ 10) - 1).toList();
     StreamSubscription<Event> resize = window.onResize.listen((_) => arrangeCards());
     disposer.addStreamSubscription(resize);
   }
@@ -49,26 +55,35 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
     disposer.dispose();
   }
 
-  arrangeCards() {
+  Future arrangeCards() async {
+    deckRepresentation = gameState.deck.cards.skip((gameState.deck.cards.length * 9 ~/ 10) - 1).toList();
     int width = window.innerWidth ?? document.documentElement.clientWidth;
-    int height = window.innerHeight ?? document.documentElement.clientHeight;
-    Dimension windowSize = Dimension(width, height);
-    int cardWidth = (windowSize.width * CardComponent.viewportWidthRatio / 100).round();
+    int cardWidth = (width * CardComponent.viewportWidthRatio / 100).round();
     cardWidth = math.max(math.min(cardWidth, CardComponent.maxWidth), CardComponent.minWidth);
 
-    int xOffset = -(cardWidth / 2).round() - (deckCards.length * cardSpacing / 2).round();
+    int xOffset = -(cardWidth / 2).round() - (deckCards.length * deckSpacing / 2).round();
     int yOffset = 0;
-
     for (int i = 0; i < deckCards.length; i++) {
-      deckCards[i].element.style.left = "${xOffset + (i * cardSpacing)}px";
+      deckCards[i].element.style.left = "${xOffset + (i * deckSpacing)}px";
       deckCards[i].element.style.top = "$yOffset}px";
       deckCards[i].element.style.zIndex = "${i * 10}px";
     }
 
-    cardContainer.style.height = "${(cardWidth * CardComponent.heightRatio).round()}px";
+    int cardSpacing = (cardWidth * CardComponent.spacingRatio).round();
+    xOffset = (cardWidth / 2).round() + (pitCards.length * cardSpacing / 2).round();
+    for (int i = 0; i < pitCards.length; i++) {
+      pitCards[i].element.style.left = "${xOffset + (i * cardSpacing)}px";
+      pitCards[i].element.style.top = "$yOffset}px";
+      pitCards[i].element.style.zIndex = "${i * 10}px";
+    }
+
+    // deckContainer.style.width = "${(cardWidth + (deckCards.length * deckSpacing)).round()}px";
+    deckContainer.style.height = "${(cardWidth * CardComponent.heightRatio).round()}px";
+    // pitContainer.style.width = "${(cardWidth + (pitCards.length * deckSpacing)).round()}px";
+    pitContainer.style.height = "${(cardWidth * CardComponent.heightRatio).round()}px";
     changeDetectorRef.markForCheck();
   }
 
-  static const int cardSpacing = 2;
+  static const int deckSpacing = 2;
 
 }
