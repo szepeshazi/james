@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'package:angular/angular.dart';
+import 'package:james/src/deck/deck.dart';
 import 'package:james/src/models/models.dart' as m;
 
 @Component(
@@ -9,7 +10,6 @@ import 'package:james/src/models/models.dart' as m;
     styleUrls: ['card.css'],
     changeDetection: ChangeDetectionStrategy.OnPush)
 class CardComponent {
-
   final ChangeDetectorRef changeDetectorRef;
 
   @Input()
@@ -20,6 +20,9 @@ class CardComponent {
 
   @Input()
   m.Player player;
+
+  @Input()
+  CardTransformation transformation;
 
   Element element;
 
@@ -47,7 +50,14 @@ class CardComponent {
     element.style.transform = "${element.style.transform} translateY(${selected ? offset : -offset}px)";
   }
 
-  String get cardImageUrl => hide ? "/img/back_red.svg" : "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
+  String get cardImageUrl =>
+      hide ? "/img/back_red.svg" : "/img/${card.rankText.toLowerCase()}_of_${card.suitText.toLowerCase()}.svg";
+
+  String get cssTransform => "rotate(${transformation?.rotation ?? 0}deg)";
+
+  String get cssLeft => "${transformation?.xOffset ?? 0}px";
+
+  String get cssTop => "${transformation?.yOffset ?? 0}px";
 
   static const int selectedOffset = 20;
   static const int viewportWidthRatio = 10;
@@ -55,5 +65,4 @@ class CardComponent {
   static const int maxWidth = 80;
   static const double heightRatio = 1.5;
   static const double spacingRatio = 0.25;
-
 }

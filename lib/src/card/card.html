@@ -1,3 +1,7 @@
-<div (click)="toggle()">
+<div
+        (click)="toggle()"
+        [style.transform]="cssTransform"
+        [style.left]="cssLeft"
+        [style.top]="cssTop">
     <img [src]="cardImageUrl">
 </div>

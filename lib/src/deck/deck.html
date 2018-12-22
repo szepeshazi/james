@@ -3,6 +3,7 @@
         <card *ngFor="let card of deckRepresentation" [card]="card" [hide]="true" #deck></card>
     </div>
     <div class="card-container" #pitContainer>
-        <card *ngFor="let card of gameState.pit" [card]="card" #pit></card>
+        <card *ngFor="let card of gameState.pit; let i=index" [card]="card" [transformation]="pitTransformations[i]"
+              #pit></card>
     </div>
 </div>

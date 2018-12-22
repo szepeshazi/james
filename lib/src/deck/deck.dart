@@ -52,7 +52,6 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
       prevTrans = newTransformations.last;
     }
     pitTransformations.addAll(newTransformations);
-    arrangeCards();
   }
 
 
@@ -88,16 +87,6 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
       deckCards[i].element.style.left = "${xOffset + (i * deckSpacing)}px";
       deckCards[i].element.style.top = "$yOffset}px";
       deckCards[i].element.style.zIndex = "${i * 10}px";
-    }
-
-    await window.animationFrame;
-    changeDetectorRef.markForCheck();
-
-    for (int i = 0; i < pitCards.length; i++) {
-      pitCards[i].element.style.left = "${pitTransformations[i].xOffset}px";
-      pitCards[i].element.style.top = "${pitTransformations[i].yOffset}px";
-      pitCards[i].element.style.transform = "rotate(${pitTransformations[i].rotation}deg)";
-      pitCards[i].element.style.zIndex = "${i * 10}px";
     }
 
     deckContainer.style.width = "${(cardWidth + (deckCards.length * deckSpacing)).round()}px";
