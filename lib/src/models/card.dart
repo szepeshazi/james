@@ -1,3 +1,5 @@
+import 'package:james/src/models/game_state.dart';
+
 enum Suit { Clubs, Diamonds, Hearts, Spades }
 
 enum Rank { Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace }
@@ -21,7 +23,9 @@ class Card implements Comparable<Card> {
   int compareTo(Card other) => ((rank.index - other.rank.index) * Suit.values.length) + (suit.index - other.suit.index);
 }
 
-class Deck {
+class Deck implements HasCards {
+
+  @override
   List<Card> cards;
 
   Deck._(this.cards);
@@ -30,7 +34,7 @@ class Deck {
     return Deck._(_open(numOfPacks: numOfPacks));
   }
 
-  factory Deck.shuffled({int numOfPacks}) {
+  factory Deck.shuffled({int numOfPacks: 1}) {
     List<Card> cards = _open(numOfPacks: numOfPacks);
     cards.shuffle();
     return Deck._(cards);
@@ -61,4 +65,16 @@ class Deck {
   Deck clone() => Deck._(List.from(cards));
 
   bool get hasMore => cards.isNotEmpty;
+}
+
+class Pile implements HasCards {
+
+  final String name;
+
+  final bool faceDown;
+
+  @override
+  List<Card> cards;
+
+  Pile(this.name, {this.faceDown = false});
 }

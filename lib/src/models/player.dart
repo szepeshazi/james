@@ -1,11 +1,12 @@
 import 'dart:math' show Random;
 
 import 'package:james/src/models/card.dart';
+import 'package:james/src/models/game_state.dart';
 import 'package:james/src/models/hand.dart';
 
 enum SeatLocation { north, west, east, south }
 
-class Player {
+class Player implements HasCards {
   final String name;
   final bool self;
   final bool computer;
@@ -15,6 +16,8 @@ class Player {
   Random random = Random();
 
   bool active = true;
+
+  List<Card> get cards => hand.cards;
 
   Player._(this.name, this.self, this.location, {this.computer});
 
@@ -57,13 +60,18 @@ class Player {
         cardScores[card.rank] ??= 0;
         cardScores[card.rank] += cardRoundStartWeights[card.rank];
       }
-      Rank maxValueRank = cardScores.keys.reduce((rank, nextRank) => cardScores[rank] > cardScores[nextRank] ? rank : nextRank);
+      Rank maxValueRank =
+          cardScores.keys.reduce((rank, nextRank) => cardScores[rank] > cardScores[nextRank] ? rank : nextRank);
       played = hand.cards.where((card) => card.rank == maxValueRank).toList();
     } else {
       played.add(hand.cards.last);
     }
     return played;
   }
+
+  Player clone() => Player._(name, self, location, computer: computer)
+    ..hand = hand.clone()
+    ..active = active;
 
   @override
   String toString() => "$name $hand";
@@ -99,5 +107,4 @@ class Player {
     Rank.King: 140,
     Rank.Ace: 160
   };
-
 }

@@ -21,44 +21,44 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren("deck")
   List<CardComponent> deckCards;
 
-  @ViewChildren("pit")
-  List<CardComponent> pitCards;
+  @ViewChildren("pile")
+  List<CardComponent> pileCards;
 
   @ViewChild("deckContainer")
   Element deckContainer;
 
-  @ViewChild("pitContainer")
-  Element pitContainer;
+  @ViewChild("pileContainer")
+  Element pileContainer;
 
   DeckComponent(this.changeDetectorRef);
 
   List<Card> deckRepresentation;
 
-  List<CardTransformation> pitTransformations;
-  GameState _gameState;
+  List<CardTransformation> pileTransformations;
+  Snapshot _gameState;
 
-  GameState get gameState => _gameState;
+  Snapshot get gameState => _gameState;
 
   @Input()
-  set gameState(GameState newValue) {
+  set gameState(Snapshot newValue) {
     _gameState = newValue;
-    pitTransformations ??= [];
-    CardTransformation prevTrans = pitTransformations.length > 0 ? pitTransformations.last : null;
+    pileTransformations ??= [];
+    CardTransformation prevTrans = pileTransformations.length > 0 ? pileTransformations.last : null;
     List<CardTransformation> newTransformations = [];
-    for (int i = pitTransformations.length; i < gameState.pit.length; i++) {
+    for (int i = pileTransformations.length; i < gameState.pile.length; i++) {
       int rotationDelta = (prevTrans?.rotation ?? 0) +
           (random.nextBool() ? -1 : 1) * (random.nextInt(rotationMaxChange - rotationMinChange) + rotationMinChange);
       newTransformations.add(CardTransformation((random.nextBool() ? -1 : 1) * (random.nextInt(xOffsetMaxChange)), (random.nextBool() ? -1 : 1) * (random.nextInt(yOffsetMaxChange)), rotationDelta));
       prevTrans = newTransformations.last;
     }
-    pitTransformations.addAll(newTransformations);
+    pileTransformations.addAll(newTransformations);
   }
 
 
 
   @override
   void ngOnInit() {
-    deckRepresentation = gameState.deck.cards.skip((gameState.deck.cards.length * 9 ~/ 10) - 1).toList();
+    deckRepresentation = gameState.stock.cards.skip((gameState.stock.cards.length * 9 ~/ 10) - 1).toList();
     StreamSubscription<Event> resize = window.onResize.listen((_) => arrangeCards());
     disposer.addStreamSubscription(resize);
   }
@@ -74,9 +74,9 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   Future arrangeCards() async {
-    if (deckCards == null || pitCards == null) return;
+    if (deckCards == null || pileCards == null) return;
 
-    deckRepresentation = gameState.deck.cards.skip((gameState.deck.cards.length * 9 ~/ 10) - 1).toList();
+    deckRepresentation = gameState.stock.cards.skip((gameState.stock.cards.length * 9 ~/ 10) - 1).toList();
     int width = window.innerWidth ?? document.documentElement.clientWidth;
     int cardWidth = (width * CardComponent.viewportWidthRatio / 100).round();
     cardWidth = math.max(math.min(cardWidth, CardComponent.maxWidth), CardComponent.minWidth);
@@ -91,8 +91,8 @@ class DeckComponent implements OnInit, OnDestroy, AfterViewInit {
 
     deckContainer.style.width = "${(cardWidth + (deckCards.length * deckSpacing)).round()}px";
     deckContainer.style.height = "${(cardWidth * CardComponent.heightRatio).round()}px";
-    pitContainer.style.width = "${cardWidth + xOffsetMaxChange * 2}px";
-    pitContainer.style.height = "${cardWidth * CardComponent.heightRatio + yOffsetMaxChange * 2}px";
+    pileContainer.style.width = "${cardWidth + xOffsetMaxChange * 2}px";
+    pileContainer.style.height = "${cardWidth * CardComponent.heightRatio + yOffsetMaxChange * 2}px";
     changeDetectorRef.markForCheck();
   }
 

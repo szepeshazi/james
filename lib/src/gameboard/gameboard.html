@@ -7,7 +7,7 @@
             <player *ngFor="let player of game.playersAt(m.SeatLocation.west)" [player]="player"></player>
         </div>
         <div class="center area">
-            <deck [gameState]="game.state"></deck>
+            <deck [gameState]="game.log.entries.last"></deck>
         </div>
         <div class="east area">
             <player *ngFor="let player of game.playersAt(m.SeatLocation.east)" [player]="player"></player>

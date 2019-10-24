@@ -36,7 +36,7 @@ class GameBoardComponent implements OnInit, AfterViewInit {
     players.add(m.Player.ai(nameService.any, false, m.SeatLocation.east));
     players.add(m.Player.human(nameService.any, true, m.SeatLocation.south));
 
-    game.state.players = players;
+    game.log.entries.last.players = players;
   }
 
   @override
@@ -44,23 +44,23 @@ class GameBoardComponent implements OnInit, AfterViewInit {
     game.play(uiCallback);
   }
 
-  Future<List<m.Card>> uiCallback(m.GamePhase phase,
+  Future<List<m.Card>> uiCallback(m.Phase phase,
       {m.Player player, List<m.Card> cards, Map<m.CallbackParam, dynamic> params}) async {
     PlayerComponent currentPlayerComponent =
         player == null ? null : playerComponents.firstWhere((component) => component.player == player);
     switch (phase) {
-      case m.GamePhase.beforeDeal:
+      case m.Phase.beforeDeal:
         currentPlayerComponent.numOfCards = params[m.CallbackParam.cardsToDeal];
         break;
-      case m.GamePhase.deal:
+      case m.Phase.deal:
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.short]);
         break;
-      case m.GamePhase.afterDeal:
+      case m.Phase.afterDeal:
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.medium]);
         break;
-      case m.GamePhase.exchange:
+      case m.Phase.exchange:
         if (player.self) {
           selectionCompleter = Completer<List<m.Card>>();
           return selectionCompleter.future;
@@ -73,15 +73,15 @@ class GameBoardComponent implements OnInit, AfterViewInit {
           return Future.value(cards);
         }
         break;
-      case m.GamePhase.replaced:
+      case m.Phase.replaced:
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.medium]);
         break;
-      case m.GamePhase.afterExchange:
+      case m.Phase.afterExchange:
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.medium]);
         break;
-      case m.GamePhase.round:
+      case m.Phase.playHand:
         if (player.self) {
           selectionCompleter = Completer<List<m.Card>>();
           return selectionCompleter.future;
@@ -94,8 +94,8 @@ class GameBoardComponent implements OnInit, AfterViewInit {
           return Future.value(cards);
         }
         break;
-      case m.GamePhase.afterRound:
-        game.state = game.state.clone();
+      case m.Phase.afterPlayHand:
+        game.log = game.log.clone();
         await updatePlayerHand(currentPlayerComponent);
         await Future.delayed(animationDelays[Delay.medium]);
         break;
